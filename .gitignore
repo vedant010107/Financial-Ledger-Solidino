@@ -1,0 +1,8 @@
+target/
+__pycache__/
+.superpowers/
+*.db
+*.db-wal
+*.db-shm
+.env
+brain/.obsidian/workspace*.json
