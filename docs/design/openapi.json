@@ -1,0 +1,2548 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Solidino Financial Ledger",
+    "version": "1.0.0",
+    "description": "Reviewed SRS §§3.3–3.4, 4 and Appendix C. All routes use loopback HTTP and UTF-8 JSON. Query strings and GET request bodies are rejected. A nonempty body requires Content-Type: application/json (optional charset=utf-8), at most 16,384 bytes, exactly one object and only documented fields. Duplicate JSON keys and chunked framing are rejected. Responses carry Cache-Control: no-store and X-Content-Type-Options: nosniff. Unknown paths return 404 route_not_found. An idle request connection closes after 15 seconds without incoming data (5-second test tolerance); this is separate from the five-second cumulative write-lock budget. Example tokens and IDs are synthetic."
+  },
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8000"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "health",
+        "summary": "health (public)",
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful health",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "X-Content-Type-Options": {
+                "$ref": "#/components/headers/X-Content-Type-Options"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                },
+                "example": {
+                  "status": "ok"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/HealthError400"
+          },
+          "404": {
+            "$ref": "#/components/responses/route_not_found"
+          },
+          "405": {
+            "$ref": "#/components/responses/method_not_allowedGet"
+          },
+          "411": {
+            "$ref": "#/components/responses/length_required"
+          },
+          "413": {
+            "$ref": "#/components/responses/body_too_large"
+          },
+          "415": {
+            "$ref": "#/components/responses/unsupported_media_type"
+          },
+          "500": {
+            "$ref": "#/components/responses/internal_error"
+          },
+          "default": {
+            "description": "Fallback for an unlisted response status.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "X-Content-Type-Options": {
+                "$ref": "#/components/headers/X-Content-Type-Options"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Public. Read the local service health. No request body."
+      }
+    },
+    "/users": {
+      "post": {
+        "operationId": "register",
+        "summary": "register (public)",
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Successful register",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "X-Content-Type-Options": {
+                "$ref": "#/components/headers/X-Content-Type-Options"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                },
+                "example": {
+                  "user_id": "00000000-0000-4000-8000-000000000007",
+                  "token": "example-only-registration-token"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/RegisterError400"
+          },
+          "404": {
+            "$ref": "#/components/responses/route_not_found"
+          },
+          "405": {
+            "$ref": "#/components/responses/method_not_allowedPost"
+          },
+          "411": {
+            "$ref": "#/components/responses/length_required"
+          },
+          "413": {
+            "$ref": "#/components/responses/body_too_large"
+          },
+          "415": {
+            "$ref": "#/components/responses/unsupported_media_type"
+          },
+          "500": {
+            "$ref": "#/components/responses/internal_error"
+          },
+          "503": {
+            "$ref": "#/components/responses/busy"
+          },
+          "default": {
+            "description": "Fallback for an unlisted response status.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "X-Content-Type-Options": {
+                "$ref": "#/components/headers/X-Content-Type-Options"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Registration"
+              },
+              "example": {
+                "name": "Asha"
+              }
+            }
+          }
+        },
+        "description": "Public. Register a user and return the bearer token once."
+      }
+    },
+    "/wallets": {
+      "post": {
+        "operationId": "createWallet",
+        "summary": "createWallet (user)",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Successful createWallet",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "X-Content-Type-Options": {
+                "$ref": "#/components/headers/X-Content-Type-Options"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Wallet"
+                },
+                "example": {
+                  "wallet_id": "00000000-0000-4000-8000-000000000001",
+                  "currency": "INR",
+                  "balance_minor": 0
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/CreateWalletError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/route_not_found"
+          },
+          "405": {
+            "$ref": "#/components/responses/method_not_allowedPost"
+          },
+          "409": {
+            "$ref": "#/components/responses/wallet_exists"
+          },
+          "411": {
+            "$ref": "#/components/responses/length_required"
+          },
+          "413": {
+            "$ref": "#/components/responses/body_too_large"
+          },
+          "415": {
+            "$ref": "#/components/responses/unsupported_media_type"
+          },
+          "500": {
+            "$ref": "#/components/responses/internal_error"
+          },
+          "503": {
+            "$ref": "#/components/responses/busy"
+          },
+          "default": {
+            "description": "Fallback for an unlisted response status.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "X-Content-Type-Options": {
+                "$ref": "#/components/headers/X-Content-Type-Options"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpenWallet"
+              },
+              "example": {
+                "currency": "INR"
+              }
+            }
+          }
+        },
+        "description": "User credential. Open one zero-balance wallet per owner and supported currency."
+      }
+    },
+    "/wallets/{wallet_id}": {
+      "get": {
+        "operationId": "readWallet",
+        "summary": "readWallet (owner)",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "wallet_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the requested wallet.",
+            "example": "00000000-0000-4000-8000-000000000001"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful readWallet",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "X-Content-Type-Options": {
+                "$ref": "#/components/headers/X-Content-Type-Options"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Wallet"
+                },
+                "example": {
+                  "wallet_id": "00000000-0000-4000-8000-000000000001",
+                  "currency": "INR",
+                  "balance_minor": 7000
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ReadWalletError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ReadWalletError404"
+          },
+          "405": {
+            "$ref": "#/components/responses/method_not_allowedGet"
+          },
+          "411": {
+            "$ref": "#/components/responses/length_required"
+          },
+          "413": {
+            "$ref": "#/components/responses/body_too_large"
+          },
+          "415": {
+            "$ref": "#/components/responses/unsupported_media_type"
+          },
+          "500": {
+            "$ref": "#/components/responses/internal_error"
+          },
+          "default": {
+            "description": "Fallback for an unlisted response status.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "X-Content-Type-Options": {
+                "$ref": "#/components/headers/X-Content-Type-Options"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Wallet owner only. Read the committed balance. No request body."
+      }
+    },
+    "/wallets/{wallet_id}/entries": {
+      "get": {
+        "operationId": "readHistory",
+        "summary": "readHistory (owner)",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "wallet_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the requested wallet.",
+            "example": "00000000-0000-4000-8000-000000000001"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful readHistory",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "X-Content-Type-Options": {
+                "$ref": "#/components/headers/X-Content-Type-Options"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/History"
+                },
+                "example": {
+                  "wallet": {
+                    "wallet_id": "00000000-0000-4000-8000-000000000001",
+                    "currency": "INR",
+                    "balance_minor": 7000
+                  },
+                  "entries": [
+                    {
+                      "transaction_id": "00000000-0000-4000-8000-000000000004",
+                      "sequence": 1,
+                      "side": "credit",
+                      "amount_minor": 10000
+                    },
+                    {
+                      "transaction_id": "00000000-0000-4000-8000-000000000005",
+                      "sequence": 2,
+                      "side": "debit",
+                      "amount_minor": 3000
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ReadWalletError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ReadWalletError404"
+          },
+          "405": {
+            "$ref": "#/components/responses/method_not_allowedGet"
+          },
+          "411": {
+            "$ref": "#/components/responses/length_required"
+          },
+          "413": {
+            "$ref": "#/components/responses/body_too_large"
+          },
+          "415": {
+            "$ref": "#/components/responses/unsupported_media_type"
+          },
+          "500": {
+            "$ref": "#/components/responses/internal_error"
+          },
+          "default": {
+            "description": "Fallback for an unlisted response status.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "X-Content-Type-Options": {
+                "$ref": "#/components/headers/X-Content-Type-Options"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Wallet owner only. Read the balance and committed entries in ledger sequence order. No request body."
+      }
+    },
+    "/transfers": {
+      "post": {
+        "operationId": "transfer",
+        "summary": "transfer (source owner)",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[!-~]{1,128}$"
+            },
+            "description": "Exactly one header, 1–128 visible ASCII characters.",
+            "example": "transfer-demo-001"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful transfer",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "X-Content-Type-Options": {
+                "$ref": "#/components/headers/X-Content-Type-Options"
+              },
+              "Idempotent-Replayed": {
+                "required": true,
+                "description": "false on first commit; true on replay of the same status and body.",
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "false",
+                    "true"
+                  ]
+                },
+                "examples": {
+                  "firstCommit": {
+                    "value": "false"
+                  },
+                  "replay": {
+                    "value": "true"
+                  }
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferResult"
+                },
+                "examples": {
+                  "firstCommit": {
+                    "summary": "First commit; Idempotent-Replayed: false",
+                    "value": {
+                      "transaction_id": "00000000-0000-4000-8000-000000000005",
+                      "from_balance_minor": 7000,
+                      "to_balance_minor": 3000
+                    }
+                  },
+                  "replay": {
+                    "summary": "Original result; Idempotent-Replayed: true",
+                    "value": {
+                      "transaction_id": "00000000-0000-4000-8000-000000000005",
+                      "from_balance_minor": 7000,
+                      "to_balance_minor": 3000
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/TransferError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ReadWalletError404"
+          },
+          "405": {
+            "$ref": "#/components/responses/method_not_allowedPost"
+          },
+          "409": {
+            "$ref": "#/components/responses/TransferError409"
+          },
+          "411": {
+            "$ref": "#/components/responses/length_required"
+          },
+          "413": {
+            "$ref": "#/components/responses/body_too_large"
+          },
+          "415": {
+            "$ref": "#/components/responses/unsupported_media_type"
+          },
+          "500": {
+            "$ref": "#/components/responses/internal_error"
+          },
+          "503": {
+            "$ref": "#/components/responses/busy"
+          },
+          "default": {
+            "description": "Fallback for an unlisted response status.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "X-Content-Type-Options": {
+                "$ref": "#/components/headers/X-Content-Type-Options"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Transfer"
+              },
+              "example": {
+                "from_wallet_id": "00000000-0000-4000-8000-000000000001",
+                "to_wallet_id": "00000000-0000-4000-8000-000000000002",
+                "amount_minor": 3000
+              }
+            }
+          }
+        },
+        "description": "Source-wallet owner only. Post one same-currency transfer atomically. Retry identity is scoped to caller, operation and key. An identical normalized request returns the original status and body, including after restart. A rollback leaves the key reusable."
+      }
+    },
+    "/admin/fund": {
+      "post": {
+        "operationId": "fund",
+        "summary": "fund (administrator)",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[!-~]{1,128}$"
+            },
+            "description": "Exactly one header, 1–128 visible ASCII characters.",
+            "example": "fund-demo-001"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful fund",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "X-Content-Type-Options": {
+                "$ref": "#/components/headers/X-Content-Type-Options"
+              },
+              "Idempotent-Replayed": {
+                "required": true,
+                "description": "false on first commit; true on replay of the same status and body.",
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "false",
+                    "true"
+                  ]
+                },
+                "examples": {
+                  "firstCommit": {
+                    "value": "false"
+                  },
+                  "replay": {
+                    "value": "true"
+                  }
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Posting"
+                },
+                "examples": {
+                  "firstCommit": {
+                    "summary": "First commit; Idempotent-Replayed: false",
+                    "value": {
+                      "transaction_id": "00000000-0000-4000-8000-000000000004"
+                    }
+                  },
+                  "replay": {
+                    "summary": "Original result; Idempotent-Replayed: true",
+                    "value": {
+                      "transaction_id": "00000000-0000-4000-8000-000000000004"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/FundError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ReadWalletError404"
+          },
+          "405": {
+            "$ref": "#/components/responses/method_not_allowedPost"
+          },
+          "409": {
+            "$ref": "#/components/responses/FundError409"
+          },
+          "411": {
+            "$ref": "#/components/responses/length_required"
+          },
+          "413": {
+            "$ref": "#/components/responses/body_too_large"
+          },
+          "415": {
+            "$ref": "#/components/responses/unsupported_media_type"
+          },
+          "500": {
+            "$ref": "#/components/responses/internal_error"
+          },
+          "503": {
+            "$ref": "#/components/responses/busy"
+          },
+          "default": {
+            "description": "Fallback for an unlisted response status.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "X-Content-Type-Options": {
+                "$ref": "#/components/headers/X-Content-Type-Options"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Fund"
+              },
+              "example": {
+                "wallet_id": "00000000-0000-4000-8000-000000000001",
+                "amount_minor": 10000
+              }
+            }
+          }
+        },
+        "description": "Administrator only. Debit the currency clearing account and credit the target wallet. Retry identity is scoped to caller, operation and key. An identical normalized request returns the original status and body, including after restart. A rollback leaves the key reusable."
+      }
+    },
+    "/transfers/{transaction_id}/reversal": {
+      "post": {
+        "operationId": "reverse",
+        "summary": "reverse (administrator)",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "transaction_id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "description": "UUID of the original posting.",
+            "example": "00000000-0000-4000-8000-000000000005"
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[!-~]{1,128}$"
+            },
+            "description": "Exactly one header, 1–128 visible ASCII characters.",
+            "example": "reverse-demo-001"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful reverse",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "X-Content-Type-Options": {
+                "$ref": "#/components/headers/X-Content-Type-Options"
+              },
+              "Idempotent-Replayed": {
+                "required": true,
+                "description": "false on first commit; true on replay of the same status and body.",
+                "schema": {
+                  "type": "string",
+                  "enum": [
+                    "false",
+                    "true"
+                  ]
+                },
+                "examples": {
+                  "firstCommit": {
+                    "value": "false"
+                  },
+                  "replay": {
+                    "value": "true"
+                  }
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Posting"
+                },
+                "examples": {
+                  "firstCommit": {
+                    "summary": "First commit; Idempotent-Replayed: false",
+                    "value": {
+                      "transaction_id": "00000000-0000-4000-8000-000000000006"
+                    }
+                  },
+                  "replay": {
+                    "summary": "Original result; Idempotent-Replayed: true",
+                    "value": {
+                      "transaction_id": "00000000-0000-4000-8000-000000000006"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/ReverseError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/ReverseError404"
+          },
+          "405": {
+            "$ref": "#/components/responses/method_not_allowedPost"
+          },
+          "409": {
+            "$ref": "#/components/responses/ReverseError409"
+          },
+          "411": {
+            "$ref": "#/components/responses/length_required"
+          },
+          "413": {
+            "$ref": "#/components/responses/body_too_large"
+          },
+          "415": {
+            "$ref": "#/components/responses/unsupported_media_type"
+          },
+          "500": {
+            "$ref": "#/components/responses/internal_error"
+          },
+          "503": {
+            "$ref": "#/components/responses/busy"
+          },
+          "default": {
+            "description": "Fallback for an unlisted response status.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "X-Content-Type-Options": {
+                "$ref": "#/components/headers/X-Content-Type-Options"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Empty"
+              },
+              "example": {}
+            }
+          }
+        },
+        "description": "Administrator only. Append a single balanced inverse linked to the original funding or transfer. The request may have no body or an empty JSON object. Retry identity is scoped to caller, operation and key. An identical normalized request returns the original status and body, including after restart. A rollback leaves the key reusable."
+      }
+    },
+    "/admin/reconcile": {
+      "get": {
+        "operationId": "reconcile",
+        "summary": "reconcile (administrator)",
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Successful reconcile",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "X-Content-Type-Options": {
+                "$ref": "#/components/headers/X-Content-Type-Options"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Report"
+                },
+                "examples": {
+                  "consistent": {
+                    "summary": "Ledger is consistent",
+                    "value": {
+                      "ok": true,
+                      "checked": {
+                        "accounts": 3,
+                        "postings": 2,
+                        "entries": 4
+                      },
+                      "totals": [
+                        {
+                          "currency": "INR",
+                          "debits_minor": "13000",
+                          "credits_minor": "13000"
+                        }
+                      ],
+                      "balances": [
+                        {
+                          "account_id": "00000000-0000-4000-8000-000000000003",
+                          "cached_minor": -10000,
+                          "recomputed_minor": "-10000"
+                        },
+                        {
+                          "account_id": "00000000-0000-4000-8000-000000000001",
+                          "cached_minor": 7000,
+                          "recomputed_minor": "7000"
+                        },
+                        {
+                          "account_id": "00000000-0000-4000-8000-000000000002",
+                          "cached_minor": 3000,
+                          "recomputed_minor": "3000"
+                        }
+                      ],
+                      "issues": []
+                    }
+                  },
+                  "inconsistent": {
+                    "summary": "Cached balance differs from recomputed balance",
+                    "value": {
+                      "ok": false,
+                      "checked": {
+                        "accounts": 3,
+                        "postings": 2,
+                        "entries": 4
+                      },
+                      "totals": [
+                        {
+                          "currency": "INR",
+                          "debits_minor": "13000",
+                          "credits_minor": "13000"
+                        }
+                      ],
+                      "balances": [
+                        {
+                          "account_id": "00000000-0000-4000-8000-000000000003",
+                          "cached_minor": -10000,
+                          "recomputed_minor": "-10000"
+                        },
+                        {
+                          "account_id": "00000000-0000-4000-8000-000000000001",
+                          "cached_minor": 7001,
+                          "recomputed_minor": "7000"
+                        },
+                        {
+                          "account_id": "00000000-0000-4000-8000-000000000002",
+                          "cached_minor": 3000,
+                          "recomputed_minor": "3000"
+                        }
+                      ],
+                      "issues": [
+                        {
+                          "code": "balance_mismatch",
+                          "affected_id": "00000000-0000-4000-8000-000000000001"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/HealthError400"
+          },
+          "401": {
+            "$ref": "#/components/responses/unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/route_not_found"
+          },
+          "405": {
+            "$ref": "#/components/responses/method_not_allowedGet"
+          },
+          "411": {
+            "$ref": "#/components/responses/length_required"
+          },
+          "413": {
+            "$ref": "#/components/responses/body_too_large"
+          },
+          "415": {
+            "$ref": "#/components/responses/unsupported_media_type"
+          },
+          "500": {
+            "$ref": "#/components/responses/internal_error"
+          },
+          "default": {
+            "description": "Fallback for an unlisted response status.",
+            "headers": {
+              "Cache-Control": {
+                "$ref": "#/components/headers/Cache-Control"
+              },
+              "X-Content-Type-Options": {
+                "$ref": "#/components/headers/X-Content-Type-Options"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "description": "Administrator only. Inspect a consistent snapshot and return 200 for a completed check, including discrepancies. No request body."
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Send exactly one Authorization: Bearer credential. The user and administrator roles are distinct."
+      }
+    },
+    "schemas": {
+      "Health": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
+          }
+        }
+      },
+      "Registration": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "After trimming, 1–100 Unicode code points. Control characters are rejected."
+          }
+        }
+      },
+      "User": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "user_id",
+          "token"
+        ],
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "OpenWallet": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "currency"
+        ],
+        "properties": {
+          "currency": {
+            "type": "string",
+            "enum": [
+              "INR",
+              "USD",
+              "EUR"
+            ]
+          }
+        }
+      },
+      "Wallet": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "wallet_id",
+          "currency",
+          "balance_minor"
+        ],
+        "properties": {
+          "wallet_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "currency": {
+            "type": "string",
+            "enum": [
+              "INR",
+              "USD",
+              "EUR"
+            ]
+          },
+          "balance_minor": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": -9223372036854775808,
+            "maximum": 9223372036854775807
+          }
+        }
+      },
+      "Entry": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "transaction_id",
+          "sequence",
+          "side",
+          "amount_minor"
+        ],
+        "properties": {
+          "transaction_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "sequence": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": -9223372036854775808,
+            "maximum": 9223372036854775807
+          },
+          "side": {
+            "type": "string",
+            "enum": [
+              "debit",
+              "credit"
+            ]
+          },
+          "amount_minor": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 9223372036854775807
+          }
+        }
+      },
+      "History": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "wallet",
+          "entries"
+        ],
+        "properties": {
+          "wallet": {
+            "$ref": "#/components/schemas/Wallet"
+          },
+          "entries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Entry"
+            }
+          }
+        }
+      },
+      "Transfer": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "from_wallet_id",
+          "to_wallet_id",
+          "amount_minor"
+        ],
+        "properties": {
+          "from_wallet_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "to_wallet_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amount_minor": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 9223372036854775807
+          }
+        }
+      },
+      "Fund": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "wallet_id",
+          "amount_minor"
+        ],
+        "properties": {
+          "wallet_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amount_minor": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1,
+            "maximum": 9223372036854775807
+          }
+        }
+      },
+      "Empty": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      },
+      "Posting": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "transaction_id"
+        ],
+        "properties": {
+          "transaction_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        }
+      },
+      "TransferResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "transaction_id",
+          "from_balance_minor",
+          "to_balance_minor"
+        ],
+        "properties": {
+          "transaction_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "from_balance_minor": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": -9223372036854775808,
+            "maximum": 9223372036854775807
+          },
+          "to_balance_minor": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": -9223372036854775808,
+            "maximum": 9223372036854775807
+          }
+        }
+      },
+      "Report": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ok",
+          "checked",
+          "totals",
+          "balances",
+          "issues"
+        ],
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "checked": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "accounts",
+              "postings",
+              "entries"
+            ],
+            "properties": {
+              "accounts": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": -9223372036854775808,
+                "maximum": 9223372036854775807
+              },
+              "postings": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": -9223372036854775808,
+                "maximum": 9223372036854775807
+              },
+              "entries": {
+                "type": "integer",
+                "format": "int64",
+                "minimum": -9223372036854775808,
+                "maximum": 9223372036854775807
+              }
+            }
+          },
+          "totals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "currency",
+                "debits_minor",
+                "credits_minor"
+              ],
+              "properties": {
+                "currency": {
+                  "type": "string",
+                  "enum": [
+                    "INR",
+                    "USD",
+                    "EUR"
+                  ]
+                },
+                "debits_minor": {
+                  "type": "string",
+                  "pattern": "^[0-9]+$"
+                },
+                "credits_minor": {
+                  "type": "string",
+                  "pattern": "^[0-9]+$"
+                }
+              }
+            }
+          },
+          "balances": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "account_id",
+                "cached_minor",
+                "recomputed_minor"
+              ],
+              "properties": {
+                "account_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "cached_minor": {
+                  "type": "integer",
+                  "format": "int64",
+                  "minimum": -9223372036854775808,
+                  "maximum": 9223372036854775807
+                },
+                "recomputed_minor": {
+                  "type": "string",
+                  "pattern": "^-?[0-9]+$"
+                }
+              }
+            }
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "code",
+                "affected_id"
+              ],
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "affected_id": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "code",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "headers": {
+      "Cache-Control": {
+        "required": true,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "no-store"
+          ]
+        },
+        "example": "no-store"
+      },
+      "X-Content-Type-Options": {
+        "required": true,
+        "schema": {
+          "type": "string",
+          "enum": [
+            "nosniff"
+          ]
+        },
+        "example": "nosniff"
+      }
+    },
+    "responses": {
+      "HealthError400": {
+        "description": "Malformed request framing. Query parameters are not accepted. This operation expects no body.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "invalid_framing": {
+                "summary": "Malformed request framing.",
+                "value": {
+                  "error": {
+                    "code": "invalid_framing",
+                    "message": "Malformed request framing."
+                  }
+                }
+              },
+              "query_not_allowed": {
+                "summary": "Query parameters are not accepted.",
+                "value": {
+                  "error": {
+                    "code": "query_not_allowed",
+                    "message": "Query parameters are not accepted."
+                  }
+                }
+              },
+              "body_not_allowed": {
+                "summary": "This operation expects no body.",
+                "value": {
+                  "error": {
+                    "code": "body_not_allowed",
+                    "message": "This operation expects no body."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "route_not_found": {
+        "description": "Unknown route.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "route_not_found": {
+                "summary": "Unknown route.",
+                "value": {
+                  "error": {
+                    "code": "route_not_found",
+                    "message": "Unknown route."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "method_not_allowedGet": {
+        "description": "Method not allowed for this path.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          },
+          "Allow": {
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "GET"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "method_not_allowed": {
+                "summary": "Method not allowed for this path.",
+                "value": {
+                  "error": {
+                    "code": "method_not_allowed",
+                    "message": "Method not allowed for this path."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "length_required": {
+        "description": "Chunked request framing is not supported.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "length_required": {
+                "summary": "Chunked request framing is not supported.",
+                "value": {
+                  "error": {
+                    "code": "length_required",
+                    "message": "Chunked request framing is not supported."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "body_too_large": {
+        "description": "Request exceeds the 16,384-byte limit.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "body_too_large": {
+                "summary": "Request exceeds the 16,384-byte limit.",
+                "value": {
+                  "error": {
+                    "code": "body_too_large",
+                    "message": "Request exceeds the 16,384-byte limit."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "unsupported_media_type": {
+        "description": "A JSON body requires application/json with UTF-8 encoding.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "unsupported_media_type": {
+                "summary": "A JSON body requires application/json with UTF-8 encoding.",
+                "value": {
+                  "error": {
+                    "code": "unsupported_media_type",
+                    "message": "A JSON body requires application/json with UTF-8 encoding."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "internal_error": {
+        "description": "An unexpected server error occurred.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "internal_error": {
+                "summary": "An unexpected server error occurred.",
+                "value": {
+                  "error": {
+                    "code": "internal_error",
+                    "message": "An unexpected server error occurred."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "RegisterError400": {
+        "description": "Malformed request framing. Query parameters are not accepted. Body must be one valid UTF-8 JSON object with unique keys. A required field is missing or an unknown field was supplied. The trimmed name must contain 1–100 Unicode code points and no control characters.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "invalid_framing": {
+                "summary": "Malformed request framing.",
+                "value": {
+                  "error": {
+                    "code": "invalid_framing",
+                    "message": "Malformed request framing."
+                  }
+                }
+              },
+              "query_not_allowed": {
+                "summary": "Query parameters are not accepted.",
+                "value": {
+                  "error": {
+                    "code": "query_not_allowed",
+                    "message": "Query parameters are not accepted."
+                  }
+                }
+              },
+              "invalid_json": {
+                "summary": "Body must be one valid UTF-8 JSON object with unique keys.",
+                "value": {
+                  "error": {
+                    "code": "invalid_json",
+                    "message": "Body must be one valid UTF-8 JSON object with unique keys."
+                  }
+                }
+              },
+              "invalid_fields": {
+                "summary": "A required field is missing or an unknown field was supplied.",
+                "value": {
+                  "error": {
+                    "code": "invalid_fields",
+                    "message": "A required field is missing or an unknown field was supplied."
+                  }
+                }
+              },
+              "invalid_name": {
+                "summary": "The trimmed name must contain 1–100 Unicode code points and no control characters.",
+                "value": {
+                  "error": {
+                    "code": "invalid_name",
+                    "message": "The trimmed name must contain 1–100 Unicode code points and no control characters."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "method_not_allowedPost": {
+        "description": "Method not allowed for this path.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          },
+          "Allow": {
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "POST"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "method_not_allowed": {
+                "summary": "Method not allowed for this path.",
+                "value": {
+                  "error": {
+                    "code": "method_not_allowed",
+                    "message": "Method not allowed for this path."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "busy": {
+        "description": "Write-lock wait exhausted. No change was committed.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "busy": {
+                "summary": "Write-lock wait exhausted. No change was committed.",
+                "value": {
+                  "error": {
+                    "code": "busy",
+                    "message": "Write-lock wait exhausted. No change was committed."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "CreateWalletError400": {
+        "description": "Malformed request framing. Query parameters are not accepted. Body must be one valid UTF-8 JSON object with unique keys. A required field is missing or an unknown field was supplied. Unsupported currency.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "invalid_framing": {
+                "summary": "Malformed request framing.",
+                "value": {
+                  "error": {
+                    "code": "invalid_framing",
+                    "message": "Malformed request framing."
+                  }
+                }
+              },
+              "query_not_allowed": {
+                "summary": "Query parameters are not accepted.",
+                "value": {
+                  "error": {
+                    "code": "query_not_allowed",
+                    "message": "Query parameters are not accepted."
+                  }
+                }
+              },
+              "invalid_json": {
+                "summary": "Body must be one valid UTF-8 JSON object with unique keys.",
+                "value": {
+                  "error": {
+                    "code": "invalid_json",
+                    "message": "Body must be one valid UTF-8 JSON object with unique keys."
+                  }
+                }
+              },
+              "invalid_fields": {
+                "summary": "A required field is missing or an unknown field was supplied.",
+                "value": {
+                  "error": {
+                    "code": "invalid_fields",
+                    "message": "A required field is missing or an unknown field was supplied."
+                  }
+                }
+              },
+              "invalid_currency": {
+                "summary": "Unsupported currency.",
+                "value": {
+                  "error": {
+                    "code": "invalid_currency",
+                    "message": "Unsupported currency."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "unauthorized": {
+        "description": "A valid bearer credential is required.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "unauthorized": {
+                "summary": "A valid bearer credential is required.",
+                "value": {
+                  "error": {
+                    "code": "unauthorized",
+                    "message": "A valid bearer credential is required."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "forbidden": {
+        "description": "This operation is not permitted for the caller.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "forbidden": {
+                "summary": "This operation is not permitted for the caller.",
+                "value": {
+                  "error": {
+                    "code": "forbidden",
+                    "message": "This operation is not permitted for the caller."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "wallet_exists": {
+        "description": "A wallet already exists for this user and currency.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "wallet_exists": {
+                "summary": "A wallet already exists for this user and currency.",
+                "value": {
+                  "error": {
+                    "code": "wallet_exists",
+                    "message": "A wallet already exists for this user and currency."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ReadWalletError400": {
+        "description": "Malformed request framing. Query parameters are not accepted. This operation expects no body. Expected a UUID.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "invalid_framing": {
+                "summary": "Malformed request framing.",
+                "value": {
+                  "error": {
+                    "code": "invalid_framing",
+                    "message": "Malformed request framing."
+                  }
+                }
+              },
+              "query_not_allowed": {
+                "summary": "Query parameters are not accepted.",
+                "value": {
+                  "error": {
+                    "code": "query_not_allowed",
+                    "message": "Query parameters are not accepted."
+                  }
+                }
+              },
+              "body_not_allowed": {
+                "summary": "This operation expects no body.",
+                "value": {
+                  "error": {
+                    "code": "body_not_allowed",
+                    "message": "This operation expects no body."
+                  }
+                }
+              },
+              "invalid_id": {
+                "summary": "Expected a UUID.",
+                "value": {
+                  "error": {
+                    "code": "invalid_id",
+                    "message": "Expected a UUID."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ReadWalletError404": {
+        "description": "Unknown route. Wallet not found.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "route_not_found": {
+                "summary": "Unknown route.",
+                "value": {
+                  "error": {
+                    "code": "route_not_found",
+                    "message": "Unknown route."
+                  }
+                }
+              },
+              "wallet_not_found": {
+                "summary": "Wallet not found.",
+                "value": {
+                  "error": {
+                    "code": "wallet_not_found",
+                    "message": "Wallet not found."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "TransferError400": {
+        "description": "Malformed request framing. Query parameters are not accepted. Body must be one valid UTF-8 JSON object with unique keys. A required field is missing or an unknown field was supplied. Expected a UUID. Expected a positive integer amount in signed 64-bit range. Source and destination must differ. Wallet currencies must match. Supply exactly one valid Idempotency-Key header.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "invalid_framing": {
+                "summary": "Malformed request framing.",
+                "value": {
+                  "error": {
+                    "code": "invalid_framing",
+                    "message": "Malformed request framing."
+                  }
+                }
+              },
+              "query_not_allowed": {
+                "summary": "Query parameters are not accepted.",
+                "value": {
+                  "error": {
+                    "code": "query_not_allowed",
+                    "message": "Query parameters are not accepted."
+                  }
+                }
+              },
+              "invalid_json": {
+                "summary": "Body must be one valid UTF-8 JSON object with unique keys.",
+                "value": {
+                  "error": {
+                    "code": "invalid_json",
+                    "message": "Body must be one valid UTF-8 JSON object with unique keys."
+                  }
+                }
+              },
+              "invalid_fields": {
+                "summary": "A required field is missing or an unknown field was supplied.",
+                "value": {
+                  "error": {
+                    "code": "invalid_fields",
+                    "message": "A required field is missing or an unknown field was supplied."
+                  }
+                }
+              },
+              "invalid_id": {
+                "summary": "Expected a UUID.",
+                "value": {
+                  "error": {
+                    "code": "invalid_id",
+                    "message": "Expected a UUID."
+                  }
+                }
+              },
+              "invalid_amount": {
+                "summary": "Expected a positive integer amount in signed 64-bit range.",
+                "value": {
+                  "error": {
+                    "code": "invalid_amount",
+                    "message": "Expected a positive integer amount in signed 64-bit range."
+                  }
+                }
+              },
+              "same_wallet": {
+                "summary": "Source and destination must differ.",
+                "value": {
+                  "error": {
+                    "code": "same_wallet",
+                    "message": "Source and destination must differ."
+                  }
+                }
+              },
+              "currency_mismatch": {
+                "summary": "Wallet currencies must match.",
+                "value": {
+                  "error": {
+                    "code": "currency_mismatch",
+                    "message": "Wallet currencies must match."
+                  }
+                }
+              },
+              "invalid_idempotency_key": {
+                "summary": "Supply exactly one valid Idempotency-Key header.",
+                "value": {
+                  "error": {
+                    "code": "invalid_idempotency_key",
+                    "message": "Supply exactly one valid Idempotency-Key header."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "TransferError409": {
+        "description": "The wallet has insufficient funds. The retry key was used with different parameters. The resulting balance exceeds the storage limit.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "insufficient_funds": {
+                "summary": "The wallet has insufficient funds.",
+                "value": {
+                  "error": {
+                    "code": "insufficient_funds",
+                    "message": "The wallet has insufficient funds."
+                  }
+                }
+              },
+              "idempotency_key_reused": {
+                "summary": "The retry key was used with different parameters.",
+                "value": {
+                  "error": {
+                    "code": "idempotency_key_reused",
+                    "message": "The retry key was used with different parameters."
+                  }
+                }
+              },
+              "balance_limit_exceeded": {
+                "summary": "The resulting balance exceeds the storage limit.",
+                "value": {
+                  "error": {
+                    "code": "balance_limit_exceeded",
+                    "message": "The resulting balance exceeds the storage limit."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "FundError400": {
+        "description": "Malformed request framing. Query parameters are not accepted. Body must be one valid UTF-8 JSON object with unique keys. A required field is missing or an unknown field was supplied. Expected a UUID. Expected a positive integer amount in signed 64-bit range. Supply exactly one valid Idempotency-Key header.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "invalid_framing": {
+                "summary": "Malformed request framing.",
+                "value": {
+                  "error": {
+                    "code": "invalid_framing",
+                    "message": "Malformed request framing."
+                  }
+                }
+              },
+              "query_not_allowed": {
+                "summary": "Query parameters are not accepted.",
+                "value": {
+                  "error": {
+                    "code": "query_not_allowed",
+                    "message": "Query parameters are not accepted."
+                  }
+                }
+              },
+              "invalid_json": {
+                "summary": "Body must be one valid UTF-8 JSON object with unique keys.",
+                "value": {
+                  "error": {
+                    "code": "invalid_json",
+                    "message": "Body must be one valid UTF-8 JSON object with unique keys."
+                  }
+                }
+              },
+              "invalid_fields": {
+                "summary": "A required field is missing or an unknown field was supplied.",
+                "value": {
+                  "error": {
+                    "code": "invalid_fields",
+                    "message": "A required field is missing or an unknown field was supplied."
+                  }
+                }
+              },
+              "invalid_id": {
+                "summary": "Expected a UUID.",
+                "value": {
+                  "error": {
+                    "code": "invalid_id",
+                    "message": "Expected a UUID."
+                  }
+                }
+              },
+              "invalid_amount": {
+                "summary": "Expected a positive integer amount in signed 64-bit range.",
+                "value": {
+                  "error": {
+                    "code": "invalid_amount",
+                    "message": "Expected a positive integer amount in signed 64-bit range."
+                  }
+                }
+              },
+              "invalid_idempotency_key": {
+                "summary": "Supply exactly one valid Idempotency-Key header.",
+                "value": {
+                  "error": {
+                    "code": "invalid_idempotency_key",
+                    "message": "Supply exactly one valid Idempotency-Key header."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "FundError409": {
+        "description": "The retry key was used with different parameters. The resulting balance exceeds the storage limit.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "idempotency_key_reused": {
+                "summary": "The retry key was used with different parameters.",
+                "value": {
+                  "error": {
+                    "code": "idempotency_key_reused",
+                    "message": "The retry key was used with different parameters."
+                  }
+                }
+              },
+              "balance_limit_exceeded": {
+                "summary": "The resulting balance exceeds the storage limit.",
+                "value": {
+                  "error": {
+                    "code": "balance_limit_exceeded",
+                    "message": "The resulting balance exceeds the storage limit."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ReverseError400": {
+        "description": "Malformed request framing. Query parameters are not accepted. Body must be one valid UTF-8 JSON object with unique keys. A required field is missing or an unknown field was supplied. Expected a UUID. Supply exactly one valid Idempotency-Key header.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "invalid_framing": {
+                "summary": "Malformed request framing.",
+                "value": {
+                  "error": {
+                    "code": "invalid_framing",
+                    "message": "Malformed request framing."
+                  }
+                }
+              },
+              "query_not_allowed": {
+                "summary": "Query parameters are not accepted.",
+                "value": {
+                  "error": {
+                    "code": "query_not_allowed",
+                    "message": "Query parameters are not accepted."
+                  }
+                }
+              },
+              "invalid_json": {
+                "summary": "Body must be one valid UTF-8 JSON object with unique keys.",
+                "value": {
+                  "error": {
+                    "code": "invalid_json",
+                    "message": "Body must be one valid UTF-8 JSON object with unique keys."
+                  }
+                }
+              },
+              "invalid_fields": {
+                "summary": "A required field is missing or an unknown field was supplied.",
+                "value": {
+                  "error": {
+                    "code": "invalid_fields",
+                    "message": "A required field is missing or an unknown field was supplied."
+                  }
+                }
+              },
+              "invalid_id": {
+                "summary": "Expected a UUID.",
+                "value": {
+                  "error": {
+                    "code": "invalid_id",
+                    "message": "Expected a UUID."
+                  }
+                }
+              },
+              "invalid_idempotency_key": {
+                "summary": "Supply exactly one valid Idempotency-Key header.",
+                "value": {
+                  "error": {
+                    "code": "invalid_idempotency_key",
+                    "message": "Supply exactly one valid Idempotency-Key header."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ReverseError404": {
+        "description": "Unknown route. Transaction not found.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "route_not_found": {
+                "summary": "Unknown route.",
+                "value": {
+                  "error": {
+                    "code": "route_not_found",
+                    "message": "Unknown route."
+                  }
+                }
+              },
+              "transaction_not_found": {
+                "summary": "Transaction not found.",
+                "value": {
+                  "error": {
+                    "code": "transaction_not_found",
+                    "message": "Transaction not found."
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "ReverseError409": {
+        "description": "This posting already has a reversal. A reversal cannot itself be reversed. The wallet has insufficient funds. The retry key was used with different parameters. The resulting balance exceeds the storage limit.",
+        "headers": {
+          "Cache-Control": {
+            "$ref": "#/components/headers/Cache-Control"
+          },
+          "X-Content-Type-Options": {
+            "$ref": "#/components/headers/X-Content-Type-Options"
+          }
+        },
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            },
+            "examples": {
+              "already_reversed": {
+                "summary": "This posting already has a reversal.",
+                "value": {
+                  "error": {
+                    "code": "already_reversed",
+                    "message": "This posting already has a reversal."
+                  }
+                }
+              },
+              "reversal_of_reversal": {
+                "summary": "A reversal cannot itself be reversed.",
+                "value": {
+                  "error": {
+                    "code": "reversal_of_reversal",
+                    "message": "A reversal cannot itself be reversed."
+                  }
+                }
+              },
+              "insufficient_funds": {
+                "summary": "The wallet has insufficient funds.",
+                "value": {
+                  "error": {
+                    "code": "insufficient_funds",
+                    "message": "The wallet has insufficient funds."
+                  }
+                }
+              },
+              "idempotency_key_reused": {
+                "summary": "The retry key was used with different parameters.",
+                "value": {
+                  "error": {
+                    "code": "idempotency_key_reused",
+                    "message": "The retry key was used with different parameters."
+                  }
+                }
+              },
+              "balance_limit_exceeded": {
+                "summary": "The resulting balance exceeds the storage limit.",
+                "value": {
+                  "error": {
+                    "code": "balance_limit_exceeded",
+                    "message": "The resulting balance exceeds the storage limit."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
