@@ -19,3 +19,4 @@ Open the brain directory as an Obsidian vault. Research notes enter through brai
 | [Verification · #3](https://github.com/vedant010107/Financial-Ledger-Solidino/issues/3) | [[verification-fixtures]], [[digest-continuity]], [[hosted-evidence]] |
 
 [[knowledge-provenance]] describes the authorship convention. [[day-1-ai-session]] records the drafting and checks.
+Stage 2 design and skill evaluation results are in [[day-2-design-review]].

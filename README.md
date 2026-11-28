@@ -1,6 +1,10 @@
 # Financial-Ledger-Solidino
 
-Java 21 and Spring Boot scaffold for an educational double-entry wallet API backed by SQLite. Stage 1 contains requirements, development tooling and a research vault. The nine product operations are scheduled for later stages.
+## Stage 2 design and local verification
+
+Read the [architecture decisions and diagrams](docs/design/design.md) and [nine-operation OpenAPI contract](docs/design/openapi.json). The Stage 2 executable exposes the public loopback health operation. With JAVA_HOME pointing to JDK 21, run `python tools/local_check.py` to package the jar, run tests, start it on an ephemeral loopback port and check its JSON response. The check generates its own temporary administrator credential and stops its service.
+
+Java 21 and Spring Boot scaffold for an educational double-entry wallet API backed by SQLite. Stage 1 contains requirements, development tooling and a research vault. The remaining wallet and ledger operations are scheduled for Days 3 and 4.
 
 ## Run the local scaffold checks
 

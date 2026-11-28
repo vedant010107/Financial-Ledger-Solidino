@@ -53,3 +53,30 @@ verified | snapshot-recovery | vedant010107 | Personally checked the assigned no
 verified | verification-fixtures | vedant010107 | Personally checked the assigned note, per the team's collective confirmation.
 verified | writer-contention | 1Vedansh | Personally checked the assigned note, per the team's collective confirmation.
 verified | knowledge-provenance | vedant010107 | Personally checked the assigned note, per the team's collective confirmation.
+
+Day 2 implementation and design drafts by Codex
+.agents/skills/brain-query/SKILL.md
+.agents/skills/brain-refine/SKILL.md
+.agents/skills/local-check/SKILL.md
+brain/projects/day-2-design-review.md
+docs/design/design.md
+docs/design/openapi.json
+docs/design/schema.sql
+src/main/java/org/solidino/ledger/HealthController.java
+src/main/java/org/solidino/ledger/LocalServerConfiguration.java
+src/main/resources/application.properties
+src/test/java/org/solidino/ledger/HealthTest.java
+tools/local_check.py
+.github/workflows/checks.yml
+README.md
+brain/index.md
+pom.xml
+src/test/java/org/solidino/ledger/ScaffoldTest.java
+The Stage 2 verification results recorded so far were obtained by Codex. Human input and PR reviews will be recorded as received.
+
+Day 2 human verification, 28 November 2026
+The team confirmed collectively that each teammate personally checked their assigned work.
+vedant010107 | #10 | Nine-route OpenAPI contract and examples.
+macwandarell | #11 | Architecture decisions, diagrams and SQLite schema.
+1Vedansh | #12 | Knowledge skills, health endpoint and Windows verification workflow.
+Formal PR review decisions are recorded separately on GitHub.
